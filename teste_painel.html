@@ -1,0 +1,3533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel 100 Dias</title>
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --panel: #111419;
+      --panel-2: #151920;
+      --panel-3: #1a1f27;
+      --border: #2a3039;
+      --border-strong: #3a424d;
+      --text: #edf1f5;
+      --muted: #8d97a3;
+      --muted-2: #68727d;
+      --accent: #d6dde5;
+      --green: #77b892;
+      --yellow: #d2b86a;
+      --orange: #d99858;
+      --red: #d86767;
+      --blue: #80a8cf;
+      --shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    ::selection {
+      background: #39414c;
+      color: #fff;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr);
+      align-items: center;
+      gap: 18px;
+      padding: 13px 18px;
+      background: rgba(11, 13, 16, 0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 1px;
+    }
+
+    .today {
+      text-align: center;
+      min-width: 250px;
+    }
+
+    .today-date {
+      font-size: 13px;
+      color: var(--text);
+      text-transform: capitalize;
+    }
+
+    .today-meta {
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 11px;
+      transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+    }
+
+    .btn:hover {
+      background: var(--panel-3);
+      border-color: var(--border-strong);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn.primary {
+      background: #dce3ea;
+      color: #101317;
+      border-color: #dce3ea;
+      font-weight: 700;
+    }
+
+    .btn.primary:hover {
+      background: #f0f3f6;
+      border-color: #f0f3f6;
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .btn.danger:hover {
+      color: #ffd1d1;
+      border-color: rgba(216, 103, 103, 0.6);
+    }
+
+    .app-main {
+      width: min(1780px, 100%);
+      margin: 0 auto;
+      padding: 16px 18px 28px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 0.95fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card {
+      min-height: 78px;
+      padding: 13px 15px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .stat-value {
+      margin-top: 6px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .stat-sub {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .selected-project {
+      min-width: 0;
+    }
+
+    .selected-project .stat-value {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 15px 0 8px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .blocks-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .work-block {
+      min-height: 170px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .work-block.drag-over {
+      border-color: #8793a0;
+      background: #151a20;
+    }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .block-name {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .block-count {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .block-body {
+      padding: 8px;
+      min-height: 116px;
+      flex: 1;
+    }
+
+    .block-empty,
+    .column-empty {
+      height: 100%;
+      min-height: 104px;
+      border: 1px dashed #2b3139;
+      display: grid;
+      place-items: center;
+      color: var(--muted-2);
+      font-size: 11px;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 10px;
+      margin-top: 13px;
+      align-items: start;
+    }
+
+    .queues {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .queue-column {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      min-height: 440px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .queue-column.drag-over {
+      border-color: #8793a0;
+      background: #13181e;
+    }
+
+    .queue-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .queue-header h3 {
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.11em;
+    }
+
+    .queue-header small {
+      color: var(--muted);
+    }
+
+    .queue-body {
+      padding: 8px;
+      min-height: 390px;
+      flex: 1;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .task-card {
+      position: relative;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      padding: 9px 10px;
+      cursor: grab;
+      transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+      user-select: none;
+    }
+
+    .task-card:hover {
+      background: var(--panel-3);
+      border-color: var(--border-strong);
+    }
+
+    .task-card.dragging {
+      opacity: 0.38;
+      transform: rotate(0.5deg);
+    }
+
+    .task-card.priority-red { border-left: 3px solid var(--red); }
+    .task-card.priority-orange { border-left: 3px solid var(--orange); }
+    .task-card.priority-yellow { border-left: 3px solid var(--yellow); }
+    .task-card.priority-green { border-left: 3px solid var(--green); }
+    .task-card.priority-neutral { border-left: 3px solid #53606e; }
+
+    .task-card.done {
+      opacity: 0.65;
+    }
+
+    .task-card.done .task-title {
+      text-decoration: line-through;
+      color: #a2abb5;
+    }
+
+    .task-topline {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .task-check {
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      flex: 0 0 15px;
+      border: 1px solid #59636e;
+      margin: 1px 0 0;
+      position: relative;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .task-check:checked {
+      background: #cfd6dd;
+      border-color: #cfd6dd;
+    }
+
+    .task-check:checked::after {
+      content: "✓";
+      position: absolute;
+      color: #0d1013;
+      font-size: 11px;
+      line-height: 13px;
+      left: 2px;
+      top: 0;
+    }
+
+    .task-content {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 12px;
+      font-weight: 650;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .task-project {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      border-radius: 4px;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--border);
+      color: var(--text);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 19px;
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      color: #bdc6d0;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .chip.deadline-red { border-color: rgba(216,103,103,.45); color: #e89a9a; }
+    .chip.deadline-orange { border-color: rgba(217,152,88,.45); color: #e2b481; }
+    .chip.deadline-yellow { border-color: rgba(210,184,106,.45); color: #decf92; }
+    .chip.deadline-green { border-color: rgba(119,184,146,.45); color: #a7d2bb; }
+
+    .task-note {
+      margin-top: 7px;
+      color: #aeb7c1;
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 7px;
+    }
+
+    .tag {
+      color: #8994a1;
+      font-size: 9px;
+      border-bottom: 1px solid #3a424d;
+      padding-bottom: 1px;
+    }
+
+    .side-panel {
+      position: sticky;
+      top: 82px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 12px;
+    }
+
+    .panel-title {
+      margin: 0 0 10px;
+      font-size: 11px;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .why-empty {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .why-task-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .why-project {
+      color: var(--muted);
+      font-size: 10px;
+      margin-bottom: 12px;
+    }
+
+    .why-grid {
+      display: grid;
+      gap: 7px;
+    }
+
+    .why-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding-bottom: 7px;
+      border-bottom: 1px solid #22272e;
+    }
+
+    .why-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .why-label {
+      color: #b5bec8;
+      font-size: 10px;
+    }
+
+    .why-value {
+      text-align: right;
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .project-mini-list {
+      display: grid;
+      gap: 7px;
+      max-height: 350px;
+      overflow: auto;
+    }
+
+    .project-mini {
+      padding: 8px;
+      border: 1px solid var(--border);
+      background: #12161b;
+      cursor: pointer;
+    }
+
+    .project-mini:hover {
+      border-color: var(--border-strong);
+    }
+
+    .project-mini.selected {
+      border-color: #6a7480;
+    }
+
+    .project-mini-name {
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .project-mini-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .progress {
+      height: 4px;
+      background: #22272f;
+      margin-top: 7px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #9ba7b4;
+      width: 0%;
+      transition: width 160ms ease;
+    }
+
+    .long-term {
+      margin-top: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 12px;
+    }
+
+    .long-term-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .long-card {
+      border: 1px solid var(--border);
+      background: #12161b;
+      padding: 9px;
+      cursor: pointer;
+    }
+
+    .long-card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .long-card-title {
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .long-card-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .footer-bar {
+      margin-top: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted-2);
+      font-size: 10px;
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(650px, 100%);
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      background: #111419;
+      border: 1px solid #3a424b;
+      box-shadow: var(--shadow);
+    }
+
+    .modal.small {
+      width: min(470px, 100%);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      font-size: 13px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .modal-body {
+      padding: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      color: #a8b2bc;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      background: #0d1014;
+      border: 1px solid #2f363f;
+      color: var(--text);
+      padding: 8px 9px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: #66717e;
+    }
+
+    .field textarea {
+      min-height: 78px;
+      resize: vertical;
+    }
+
+    .field-note {
+      font-size: 9px;
+      color: var(--muted-2);
+    }
+
+    .range-wrap {
+      display: grid;
+      grid-template-columns: 1fr 44px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      border: none;
+      accent-color: #acb7c3;
+    }
+
+    .range-value {
+      border: 1px solid var(--border);
+      padding: 5px 6px;
+      text-align: center;
+      color: var(--text);
+      font-size: 10px;
+    }
+
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 7px;
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .confirm-text {
+      color: #b5bec7;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .filter-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+
+    .filter-btn.active {
+      color: var(--text);
+      border-color: #67717d;
+      background: #151a20;
+    }
+
+    .search {
+      margin-left: auto;
+      min-width: 210px;
+      background: #0d1014;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 9px;
+      border-radius: 4px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 90;
+      background: #171c22;
+      color: var(--text);
+      border: 1px solid #46505c;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      font-size: 11px;
+      max-width: 340px;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 140ms ease, transform 140ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .drop-placeholder {
+      height: 10px;
+      border: 1px dashed #65717d;
+      background: rgba(131, 145, 158, 0.08);
+      margin: 1px 0;
+    }
+
+    .deadline-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .deadline-line .days {
+      font-weight: 700;
+    }
+
+    .project-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .project-badge {
+      font-size: 9px;
+      padding: 2px 5px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #63707d;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .status-dot.active { background: var(--blue); }
+    .status-dot.waiting { background: var(--yellow); }
+    .status-dot.done { background: var(--green); }
+    .status-dot.paused { background: var(--orange); }
+
+
+    .auth-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(11, 13, 16, 0.96);
+    }
+
+    .auth-gate.hidden { display: none !important; }
+
+    .auth-card {
+      width: min(390px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    .auth-subtitle {
+      margin: 7px 0 18px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .auth-card form { display: grid; gap: 11px; }
+    .auth-card .btn { margin-top: 3px; }
+    .auth-message { min-height: 16px; color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .auth-message.error { color: #e89a9a; }
+    .auth-user { color: var(--muted); font-size: 10px; margin-right: 4px; }
+
+    @media (max-width: 1280px) {
+      .queues { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .workspace { grid-template-columns: 1fr; }
+      .side-panel { position: static; grid-template-columns: 1.2fr 1fr; }
+      .long-term-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 900px) {
+      .topbar { grid-template-columns: 1fr; text-align: left; }
+      .today { text-align: left; min-width: 0; }
+      .top-actions { justify-content: flex-start; }
+      .dashboard { grid-template-columns: 1fr 1fr; }
+      .blocks-grid { grid-template-columns: 1fr; }
+      .queues { grid-template-columns: 1fr; }
+      .side-panel { grid-template-columns: 1fr; }
+      .long-term-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .app-main { padding-left: 10px; padding-right: 10px; }
+      .dashboard { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .long-term-grid { grid-template-columns: 1fr; }
+      .search { margin-left: 0; width: 100%; min-width: 0; }
+    }
+
+    /* Ajustes das novas informações */
+    .task-card.priority-red {
+      background: rgba(216, 103, 103, 0.13);
+      border-left-width: 4px;
+      box-shadow: inset 8px 0 22px rgba(216, 103, 103, 0.035);
+    }
+    .task-card.priority-orange {
+      background: rgba(217, 152, 88, 0.105);
+      border-left-width: 4px;
+    }
+    .task-card.priority-yellow {
+      background: rgba(210, 184, 106, 0.085);
+      border-left-width: 4px;
+    }
+    .task-card.priority-green {
+      background: rgba(138, 196, 156, 0.075);
+      border-left-width: 4px;
+    }
+    .task-card.priority-fresh {
+      background: rgba(104, 196, 151, 0.055);
+      border-left: 4px solid #78c99b;
+    }
+
+    .task-card .task-title {
+      transition: color 120ms ease;
+    }
+    .task-card.priority-red .task-title { color: #ffe1e1; }
+    .task-card.priority-orange .task-title { color: #f6dfc7; }
+    .task-card.priority-yellow .task-title { color: #f1e8bd; }
+    .task-card.priority-green .task-title,
+    .task-card.priority-fresh .task-title { color: #d9f1e0; }
+
+    .time-load {
+      margin-top: 10px;
+    }
+
+    .time-load-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .time-load-top strong {
+      color: var(--text);
+      font-size: 10px;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .load-track {
+      height: 7px;
+      background: #222830;
+      border: 1px solid #303741;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+
+    .load-fill {
+      height: 100%;
+      min-width: 0;
+      transition: width 180ms ease, background 180ms ease;
+    }
+
+    .day-load {
+      margin-top: 9px;
+    }
+
+    .day-load-track {
+      height: 7px;
+      background: #222830;
+      border: 1px solid #303741;
+      overflow: hidden;
+    }
+
+    .day-load-fill {
+      height: 100%;
+      transition: width 180ms ease, background 180ms ease;
+    }
+
+    .segment-mini {
+      padding: 9px;
+      border: 1px solid var(--border);
+      background: #12161b;
+      cursor: pointer;
+    }
+
+    .segment-mini:hover {
+      border-color: var(--border-strong);
+    }
+
+    .segment-mini.selected {
+      border-color: #6a7480;
+      box-shadow: inset 3px 0 0 #7bc69a;
+    }
+
+    .segment-name {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .segment-amount {
+      color: #9de0b6;
+      font-weight: 700;
+    }
+
+    .segment-secondary {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 10px 0;
+    }
+
+    .why-note {
+      width: 100%;
+      min-height: 74px;
+      margin-top: 12px;
+      background: #0d1014;
+      color: var(--text);
+      border: 1px solid #2f363f;
+      border-radius: 4px;
+      padding: 8px 9px;
+      resize: vertical;
+      outline: none;
+      font-size: 11px;
+    }
+
+    .why-note:focus {
+      border-color: #66717e;
+    }
+
+    .completed {
+      margin-top: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 12px;
+    }
+
+    .completed-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .completed-card {
+      border: 1px solid #2d3b34;
+      background: rgba(68, 113, 87, 0.10);
+      padding: 9px;
+    }
+
+    .completed-card .task-title {
+      color: #cfe9d8;
+    }
+
+    .completed-date {
+      color: #8eb9a0;
+      font-size: 9px;
+      margin-top: 5px;
+    }
+
+    .completed-card .task-project {
+      margin-top: 3px;
+    }
+
+    .metric-emphasis {
+      font-weight: 700;
+    }
+
+    .metric-green { color: #9de0b6; }
+    .metric-red { color: #eb8b8b; }
+
+    @media (max-width: 900px) {
+      .completed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .completed-grid { grid-template-columns: 1fr; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">100D</div>
+        <div>
+          <div class="brand-title">Painel de Projetos</div>
+          <div class="brand-subtitle">organizar · decidir · executar</div>
+        </div>
+      </div>
+
+      <div class="today">
+        <div id="todayDate" class="today-date"></div>
+        <div id="todayMeta" class="today-meta"></div>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn primary" id="newTaskBtn">+ NOVA TAREFA</button>
+        <button class="btn" id="newProjectBtn">+ NOVO PROJETO</button>
+        <button class="btn" id="newSegmentBtn">+ NOVO SEGMENTO</button>
+        <button class="btn ghost" id="exportBtn">Exportar</button>
+        <button class="btn ghost" id="importBtn">Importar</button>
+        <button class="btn ghost danger" id="resetBtn">Resetar</button>
+        <button class="btn ghost" id="logoutBtn">Sair</button>
+        <input id="importInput" class="hidden" type="file" accept="application/json,.json" />
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="dashboard" aria-label="Resumo do dia">
+        <div class="stat-card">
+          <div class="stat-label">Estado do dia</div>
+          <div id="dayState" class="stat-value">Livre para organizar</div>
+          <div id="dayStateSub" class="stat-sub">0 / 450 min planejados.</div>
+          <div class="day-load">
+            <div class="day-load-track"><div id="dayLoadFill" class="day-load-fill" style="width:0%;background:#70c692"></div></div>
+          </div>
+        </div>
+
+        <div class="stat-card selected-project">
+          <div class="stat-label">Selecionado</div>
+          <div id="selectedProjectValue" class="stat-value">Nenhum</div>
+          <div id="selectedProjectSub" class="stat-sub">Clique em uma tarefa, segmento ou projeto.</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Blocos ocupados</div>
+          <div id="blocksStat" class="stat-value">0 / 3</div>
+          <div id="blocksStatSub" class="stat-sub">0 tarefa(s) no dia.</div>
+        </div>
+      </section>
+
+      <section aria-labelledby="blocksTitle">
+        <div class="section-title">
+          <h2 id="blocksTitle">Blocos de trabalho</h2>
+          <span>arraste tarefas para testar o dia sem prender sua agenda</span>
+        </div>
+
+        <div id="blocksGrid" class="blocks-grid">
+          <!-- JS -->
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Fila de trabalho">
+        <div>
+          <div class="section-title">
+            <h2>Fila de trabalho</h2>
+            <span>agora → próximo → depois → futuro</span>
+          </div>
+
+          <div class="filter-row">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="short">Curto prazo</button>
+            <button class="filter-btn" data-filter="medium">Médio prazo</button>
+            <button class="filter-btn" data-filter="long">Longo prazo</button>
+            <button class="filter-btn" data-filter="active">Em andamento</button>
+            <button class="filter-btn" data-filter="waiting">Aguardando</button>
+            <input id="searchInput" class="search" type="search" placeholder="Buscar tarefa/projeto..." />
+          </div>
+
+          <div id="queues" class="queues">
+            <!-- JS -->
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="panel" id="whyPanel">
+            <h2 class="panel-title">Por que esta tarefa?</h2>
+            <div id="whyContent" class="why-empty">Selecione uma tarefa para ver os critérios de decisão.</div>
+          </div>
+
+          <div class="panel">
+            <div class="section-title" style="margin-top:0">
+              <h2>Segmentos</h2>
+              <span id="segmentCountLabel">0</span>
+            </div>
+            <div id="segmentMiniList" class="project-mini-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="section-title" style="margin-top:0">
+              <h2>Projetos ativos</h2>
+              <span id="projectCountLabel">0</span>
+            </div>
+            <div id="projectMiniList" class="project-mini-list"></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="long-term" aria-labelledby="longTermTitle">
+        <div class="section-title" style="margin-top:0">
+          <h2 id="longTermTitle">Visão de longo prazo</h2>
+          <span>objetivos que continuam visíveis sem ocupar o fluxo principal</span>
+        </div>
+        <div id="longTermGrid" class="long-term-grid"></div>
+      </section>
+      <section class="completed" aria-labelledby="completedTitle">
+        <div class="section-title" style="margin-top:0">
+          <h2 id="completedTitle">Concluídos</h2>
+          <span id="completedCountLabel">0 tarefa(s)</span>
+        </div>
+        <div id="completedGrid" class="completed-grid"></div>
+      </section>
+
+
+      <div class="footer-bar">
+        <div>Dados sincronizados com <strong>Supabase</strong>. localStorage funciona como cache local.</div>
+        <div class="footer-right">
+          <span id="saveStatus">Salvo localmente</span>
+          <span>Atalhos: N = tarefa · P = projeto · S = segmento · Esc = fechar</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Segment modal -->
+  <div id="segmentModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal small">
+      <div class="modal-head">
+        <h3 id="segmentModalTitle">Novo segmento</h3>
+        <button class="icon-btn" data-close="segmentModal">×</button>
+      </div>
+      <form id="segmentForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="field full">
+              <label for="segmentName">Nome</label>
+              <input id="segmentName" name="name" required maxlength="120" autocomplete="off" />
+            </div>
+            <div class="field full">
+              <label for="segmentDescription">Descrição</label>
+              <textarea id="segmentDescription" name="description" maxlength="600"></textarea>
+            </div>
+            <div class="field">
+              <label for="segmentStatus">Status</label>
+              <select id="segmentStatus" name="status">
+                <option value="active">Em andamento</option>
+                <option value="waiting">Aguardando</option>
+                <option value="paused">Pausado</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="segmentLeverage">Alavancagem (0–10)</label>
+              <div class="range-wrap">
+                <input id="segmentLeverage" name="leverage" type="range" min="0" max="10" step="1" value="5" />
+                <output id="segmentLeverageValue" class="range-value">5</output>
+              </div>
+            </div>
+            <div class="field">
+              <label for="segmentROI">Retorno / Investimento (0–10)</label>
+              <div class="range-wrap">
+                <input id="segmentROI" name="roi" type="range" min="0" max="10" step="1" value="5" />
+                <output id="segmentROIValue" class="range-value">5</output>
+              </div>
+            </div>
+            <div class="field">
+              <label for="segmentThirdParty">Dependência de terceiros</label>
+              <select id="segmentThirdParty" name="thirdParty">
+                <option value="0">0 — Faço sozinho</option>
+                <option value="1">1 — Baixa</option>
+                <option value="2">2 — Moderada</option>
+                <option value="3">3 — Alta</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn ghost" type="button" data-close="segmentModal">Cancelar</button>
+          <button class="btn primary" type="submit">Salvar segmento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Project modal -->
+  <div id="projectModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="projectModalTitle">Novo projeto</h3>
+        <button class="icon-btn" data-close="projectModal">×</button>
+      </div>
+      <form id="projectForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="field full">
+              <label for="projectName">Nome</label>
+              <input id="projectName" name="name" required maxlength="120" autocomplete="off" />
+            </div>
+            <div class="field full">
+              <label for="projectDescription">Descrição</label>
+              <textarea id="projectDescription" name="description" maxlength="800"></textarea>
+            </div>
+            <div class="field">
+              <label for="projectSegment">Segmento</label>
+              <select id="projectSegment" name="segmentId"></select>
+            </div>
+            <div class="field">
+              <label for="projectHorizon">Horizonte</label>
+              <select id="projectHorizon" name="horizon">
+                <option value="short">Curto prazo</option>
+                <option value="medium">Médio prazo</option>
+                <option value="long">Longo prazo</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="projectStatus">Status</label>
+              <select id="projectStatus" name="status">
+                <option value="active">Em andamento</option>
+                <option value="waiting">Aguardando</option>
+                <option value="paused">Pausado</option>
+                <option value="done">Concluído</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="projectDeadline">Data limite</label>
+              <input id="projectDeadline" name="deadline" type="date" />
+            </div>
+            <div class="field">
+              <label for="projectROI">Retorno / Investimento (0–10)</label>
+              <div class="range-wrap">
+                <input id="projectROI" name="roi" type="range" min="0" max="10" step="1" value="5" />
+                <output id="projectROIValue" class="range-value">5</output>
+              </div>
+            </div>
+            <div class="field">
+              <label for="projectRevenuePotential">Receita potencial (R$)</label>
+              <input id="projectRevenuePotential" name="revenuePotential" type="number" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label for="projectThirdParty">Dependência de terceiros</label>
+              <select id="projectThirdParty" name="thirdParty">
+                <option value="0">0 — Faço sozinho</option>
+                <option value="1">1 — Baixa</option>
+                <option value="2">2 — Moderada</option>
+                <option value="3">3 — Alta</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="projectLeverage">Alavancagem (0–10)</label>
+              <div class="range-wrap">
+                <input id="projectLeverage" name="leverage" type="range" min="0" max="10" step="1" value="5" />
+                <output id="projectLeverageValue" class="range-value">5</output>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn ghost" type="button" data-close="projectModal">Cancelar</button>
+          <button class="btn primary" type="submit">Salvar projeto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task modal -->
+  <div id="taskModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="taskModalTitle">Nova tarefa</h3>
+        <button class="icon-btn" data-close="taskModal">×</button>
+      </div>
+      <form id="taskForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="field full">
+              <label for="taskTitle">Título</label>
+              <input id="taskTitle" name="title" required maxlength="160" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="taskSegment">Segmento</label>
+              <select id="taskSegment" name="segmentId"></select>
+            </div>
+            <div class="field">
+              <label for="taskProject">Projeto relacionado (opcional)</label>
+              <select id="taskProject" name="projectId"></select>
+            </div>
+            <div class="field">
+              <label for="taskStatus">Status</label>
+              <select id="taskStatus" name="status">
+                <option value="active">Em andamento</option>
+                <option value="waiting">Aguardando</option>
+                <option value="planned">Planejado</option>
+                <option value="done">Concluído</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="taskPriority">Prioridade</label>
+              <select id="taskPriority" name="priority">
+                <option value="low">Baixa</option>
+                <option value="normal">Normal</option>
+                <option value="high">Alta</option>
+                <option value="critical">Crítica</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="taskDeadline">Prazo (opcional)</label>
+              <input id="taskDeadline" name="deadline" type="date" />
+            </div>
+            <div class="field">
+              <label for="taskEstimate">Estimativa de duração</label>
+              <input id="taskEstimate" name="estimate" placeholder="Ex.: 90 min, 1h30" maxlength="40" />
+              <div class="field-note">O tempo é usado nas barras dos blocos quando a tarefa estiver dentro deles.</div>
+            </div>
+            <div class="field">
+              <label for="taskReceivable">Receita a receber (R$)</label>
+              <input id="taskReceivable" name="receivable" type="number" min="0" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label for="taskTags">Tags</label>
+              <input id="taskTags" name="tags" placeholder="Ex.: cliente, CAD, loja" maxlength="180" />
+            </div>
+            <div class="field full">
+              <label for="taskNote">Observação da tarefa</label>
+              <textarea id="taskNote" name="note" maxlength="600"></textarea>
+            </div>
+            <div class="field">
+              <label for="taskEconomy">Economiza trabalho futuro?</label>
+              <select id="taskEconomy" name="futureEconomy">
+                <option value="0">Não definido</option>
+                <option value="1">Não</option>
+                <option value="2">Sim</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="taskDependency">Alguém depende disso?</label>
+              <select id="taskDependency" name="someoneDepends">
+                <option value="0">Não</option>
+                <option value="1">Talvez</option>
+                <option value="2">Sim</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn ghost" type="button" data-close="taskModal">Cancelar</button>
+          <button class="btn primary" type="submit">Salvar tarefa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm modal -->
+  <div id="confirmModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal small">
+      <div class="modal-head">
+        <h3 id="confirmTitle">Confirmar</h3>
+        <button class="icon-btn" data-close="confirmModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="confirmText" class="confirm-text"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn ghost" type="button" data-close="confirmModal">Cancelar</button>
+        <button id="confirmActionBtn" class="btn danger" type="button">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="authGate" class="auth-gate">
+    <div class="auth-card">
+      <div class="auth-title">PAINEL 100</div>
+      <div class="auth-subtitle">Entre para sincronizar seus dados entre dispositivos.</div>
+      <form id="authForm">
+        <div class="field">
+          <label for="authEmail">E-mail</label>
+          <input id="authEmail" type="email" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="authPassword">Senha</label>
+          <input id="authPassword" type="password" autocomplete="current-password" required />
+        </div>
+        <button class="btn primary" type="submit">Entrar</button>
+        <div id="authMessage" class="auth-message"></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    "use strict";
+
+    /*
+      ============================================================
+      DADOS INICIAIS DE DEMONSTRAÇÃO
+      ============================================================
+      Para começar com um painel vazio, altere USE_DEMO_DATA para false.
+    */
+    const USE_DEMO_DATA = true;
+    const STORAGE_KEY = "painel_100_dias_v2";
+    const LOCAL_OWNER_KEY = `${STORAGE_KEY}_owner`;
+
+    // COLE AQUI os dados do seu projeto Supabase.
+    // Use a Project URL e a Publishable Key (sb_publishable_...).
+    const SUPABASE_URL = "https://ojhirqiwnijrckqgvphh.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_H1HmvZfn1Rn7jS1FOdrxig_upv5b4Nc";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    let currentUser = null;
+    let cloudSaveQueue = Promise.resolve();
+    let cloudReady = false;
+
+    const blockDefinitions = [
+      { id: "block1", label: "BLOCO 1", start: "09:30", end: "12:00", capacity: 150 },
+      { id: "block2", label: "BLOCO 2", start: "13:00", end: "15:00", capacity: 120 },
+      { id: "block3", label: "BLOCO 3", start: "15:00", end: "18:00", capacity: 180 }
+    ];
+
+    const queueDefinitions = [
+      { id: "now", label: "AGORA", hint: "atenção neste momento" },
+      { id: "next", label: "PRÓXIMO", hint: "prováveis próximas ações" },
+      { id: "later", label: "DEPOIS", hint: "importante, mas não agora" },
+      { id: "future", label: "FUTURO", hint: "não precisa entrar no fluxo ainda" }
+    ];
+
+    const state = {
+      data: null,
+      selectedTaskId: null,
+      selectedProjectId: null,
+      selectedSegmentId: null,
+      editingProjectId: null,
+      editingSegmentId: null,
+      editingTaskId: null,
+      filter: "all",
+      search: "",
+      confirmAction: null,
+      drag: { taskId: null }
+    };
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    function uid(prefix) {
+      return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function todayISO() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+
+    function addDays(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+
+    function addDaysFromDate(date, days) {
+      const d = new Date(date);
+      d.setDate(d.getDate() + days);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return "Sem prazo";
+      const [y, m, d] = dateString.split("-").map(Number);
+      if (!y || !m || !d) return "Sem prazo";
+      return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
+        .format(new Date(y, m - 1, d));
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "—";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return "—";
+      return new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      }).format(d);
+    }
+
+    function daysUntil(dateString) {
+      if (!dateString) return null;
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const [y, m, d] = dateString.split("-").map(Number);
+      const target = new Date(y, m - 1, d);
+      target.setHours(0,0,0,0);
+      return Math.ceil((target - today) / 86400000);
+    }
+
+    function deadlineClass(dateString) {
+      const days = daysUntil(dateString);
+      if (days === null) return "priority-neutral";
+      if (days < 3) return "priority-red";
+      if (days <= 6) return "priority-orange";
+      if (days <= 10) return "priority-yellow";
+      if (days <= 14) return "priority-green";
+      return "priority-fresh";
+    }
+
+    function deadlineChipClass(dateString) {
+      const days = daysUntil(dateString);
+      if (days === null) return "";
+      if (days < 3) return "deadline-red";
+      if (days <= 6) return "deadline-orange";
+      if (days <= 10) return "deadline-yellow";
+      return "deadline-green";
+    }
+
+    function deadlineLabel(dateString) {
+      const days = daysUntil(dateString);
+      if (days === null) return "Sem prazo";
+      if (days < 0) return `${Math.abs(days)}d atrasado`;
+      if (days === 0) return "vence hoje";
+      if (days === 1) return "vence amanhã";
+      return `${days}d restantes`;
+    }
+
+    function money(value) {
+      return Number(value || 0).toLocaleString("pt-BR", {
+        style: "currency", currency: "BRL", maximumFractionDigits: 2
+      });
+    }
+
+    function horizonLabel(value) {
+      return ({ short: "Curto prazo", medium: "Médio prazo", long: "Longo prazo" })[value] || "—";
+    }
+
+    function statusLabel(value) {
+      return ({
+        active: "Em andamento", waiting: "Aguardando", planned: "Planejado",
+        paused: "Pausado", done: "Concluído"
+      })[value] || "—";
+    }
+
+    function priorityLabel(value) {
+      return ({ low: "Baixa", normal: "Normal", high: "Alta", critical: "Crítica" })[value] || "—";
+    }
+
+    function thirdPartyLabel(value) {
+      return ({ 0:"Faço sozinho", 1:"Baixa", 2:"Moderada", 3:"Alta" })[value] || "—";
+    }
+
+    function economyLabel(value) {
+      return ({ 0:"Não definido", 1:"Não", 2:"Sim" })[value] || "—";
+    }
+
+    function dependsLabel(value) {
+      return ({ 0:"Não", 1:"Talvez", 2:"Sim" })[value] || "—";
+    }
+
+    function parseDurationMinutes(value) {
+      if (value === null || value === undefined) return 0;
+      const raw = String(value).trim().toLowerCase();
+      if (!raw) return 0;
+
+      if (/^\d+([.,]\d+)?$/.test(raw)) return Math.max(0, Math.round(Number(raw.replace(",", "."))));
+
+      const hhmm = raw.match(/^(\d+)\s*:\s*(\d{1,2})$/);
+      if (hhmm) return Number(hhmm[1]) * 60 + Number(hhmm[2]);
+
+      const hourMatch = raw.match(/(\d+(?:[.,]\d+)?)\s*h(?:oras?)?/);
+      const minMatch = raw.match(/(\d+(?:[.,]\d+)?)\s*m(?:in(?:utos?)?)?/);
+      const hours = hourMatch ? Number(hourMatch[1].replace(",", ".")) * 60 : 0;
+      const minutes = minMatch ? Number(minMatch[1].replace(",", ".")) : 0;
+      if (hourMatch || minMatch) return Math.max(0, Math.round(hours + minutes));
+
+      const number = raw.match(/-?\d+(?:[.,]\d+)?/);
+      return number ? Math.max(0, Math.round(Number(number[0].replace(",", ".")))) : 0;
+    }
+
+    function formatMinutes(minutes) {
+      const total = Math.max(0, Math.round(Number(minutes) || 0));
+      const h = Math.floor(total / 60);
+      const m = total % 60;
+      if (!h) return `${m} min`;
+      if (!m) return `${h}h`;
+      return `${h}h ${m}min`;
+    }
+
+    function loadColorFromRatio(ratio) {
+      const clamped = Math.min(1, Math.max(0, ratio));
+      const hue = Math.round(120 - 120 * clamped);
+      return `hsl(${hue} 58% 47%)`;
+    }
+
+    function getTask(id) {
+      return state.data.tasks.find(t => t.id === id);
+    }
+
+    function getProject(id) {
+      return state.data.projects.find(p => p.id === id);
+    }
+
+    function getSegment(id) {
+      return state.data.segments.find(s => s.id === id);
+    }
+
+    function resolvedSegmentId(task) {
+      if (!task) return "";
+      const project = getProject(task.projectId);
+      return project?.segmentId || task.segmentId || "";
+    }
+
+    function projectTaskStats(projectId) {
+      const tasks = state.data.tasks.filter(t => t.projectId === projectId);
+      return { total: tasks.length, done: tasks.filter(t => t.status === "done").length };
+    }
+
+    function segmentTaskStats(segmentId) {
+      const tasks = state.data.tasks.filter(t => resolvedSegmentId(t) === segmentId);
+      const receivable = tasks
+        .filter(t => t.status !== "done")
+        .reduce((sum, t) => sum + Number(t.receivable || 0), 0);
+      return {
+        total: tasks.length,
+        done: tasks.filter(t => t.status === "done").length,
+        receivable,
+        projects: state.data.projects.filter(p => p.segmentId === segmentId).length
+      };
+    }
+
+    function createEmptyData() {
+      return {
+        version: 2,
+        savedAt: new Date().toISOString(),
+        segments: [],
+        projects: [],
+        tasks: [],
+        queues: { now: [], next: [], later: [], future: [] },
+        blocks: { block1: [], block2: [], block3: [] },
+        completed: []
+      };
+    }
+
+    function demoSegment(name, extra = {}) {
+      return {
+        id: uid("s"),
+        name,
+        description: "",
+        status: "active",
+        roi: 5,
+        thirdParty: 0,
+        leverage: 5,
+        ...extra
+      };
+    }
+
+    function demoProject(name, segmentId, extra = {}) {
+      return {
+        id: uid("p"),
+        name,
+        segmentId,
+        description: "",
+        horizon: "medium",
+        deadline: "",
+        status: "planned",
+        revenuePotential: 0,
+        roi: 5,
+        thirdParty: 0,
+        leverage: 5,
+        ...extra
+      };
+    }
+
+    function demoTask(title, extra = {}) {
+      return {
+        id: uid("t"),
+        title,
+        segmentId: "",
+        projectId: "",
+        status: "active",
+        priority: "normal",
+        deadline: "",
+        estimate: "",
+        receivable: 0,
+        note: "",
+        whyNote: "",
+        tags: "",
+        futureEconomy: 0,
+        someoneDepends: 0,
+        queue: "later",
+        block: null,
+        ...extra
+      };
+    }
+
+    function createInitialData() {
+      const segments = [
+        demoSegment("Impressão 3D", { description: "Produção e operação contínua de impressão." }),
+        demoSegment("Revo · Itens da Loja", { description: "Linha contínua de produtos para a loja.", roi: 8, leverage: 8 }),
+        demoSegment("Freela de Design 3D", { description: "Fonte de renda recorrente com modelagem e ajustes.", roi: 8, leverage: 6 }),
+        demoSegment("Robótica", { description: "Projetos e experimentos de robótica.", leverage: 8 }),
+        demoSegment("Conteúdo / Vídeos", { description: "Conteúdo técnico e processo de projetos.", leverage: 9 }),
+        demoSegment("Ensino / Cursos", { description: "Cursos, materiais e experiências de ensino.", leverage: 9 }),
+        demoSegment("Universidade", { description: "Divulgação e projetos acadêmicos." })
+      ];
+      const bySeg = name => segments.find(s => s.name === name)?.id;
+
+      const projects = [
+        demoProject("Sistema de Orçamento STL", bySeg("Impressão 3D"), {
+          deadline: addDays(36), status: "active", horizon: "medium",
+          revenuePotential: 2500, roi: 10, leverage: 10
+        }),
+        demoProject("Curso de Impressão 3D", bySeg("Ensino / Cursos"), {
+          deadline: addDays(75), status: "planned", horizon: "long",
+          revenuePotential: 3000, roi: 9, thirdParty: 2, leverage: 8
+        }),
+        demoProject("Curso de Design 3D", bySeg("Ensino / Cursos"), {
+          deadline: addDays(90), status: "planned", horizon: "long",
+          revenuePotential: 2400, roi: 8, leverage: 9
+        }),
+        demoProject("Robô de Xadrez", bySeg("Robótica"), {
+          deadline: addDays(100), status: "planned", horizon: "long",
+          revenuePotential: 700, roi: 5, leverage: 6
+        }),
+        demoProject("Divulgação da Impressão 3D na Universidade", bySeg("Universidade"), {
+          deadline: addDays(28), status: "active", horizon: "medium",
+          revenuePotential: 500, roi: 6, thirdParty: 2, leverage: 7
+        }),
+        demoProject("Série de Vídeos de Processo", bySeg("Conteúdo / Vídeos"), {
+          deadline: addDays(60), status: "active", horizon: "medium",
+          revenuePotential: 1600, roi: 7, leverage: 9
+        })
+      ];
+
+      const byProject = name => projects.find(p => p.name === name)?.id;
+      const tasks = [
+        demoTask("Finalizar modelo do cliente X", {
+          segmentId: bySeg("Freela de Design 3D"), queue: null, block: "block1",
+          deadline: addDays(1), priority: "critical", estimate: "120 min",
+          receivable: 450, tags: "cliente, CAD",
+          note: "Enviar render final antes de confirmar a impressão."
+        }),
+        demoTask("Preparar peças para a loja", {
+          segmentId: bySeg("Revo · Itens da Loja"), queue: null, block: "block2",
+          deadline: addDays(6), priority: "high", estimate: "90 min",
+          tags: "produção, loja", futureEconomy: 2
+        }),
+        demoTask("Definir fórmula de custo do STL", {
+          segmentId: bySeg("Impressão 3D"), projectId: byProject("Sistema de Orçamento STL"),
+          queue: null, block: "block3", deadline: addDays(10), priority: "high",
+          estimate: "60 min", tags: "programação, automação", futureEconomy: 2
+        }),
+        demoTask("Gravar B-roll de modelagem → impressão", {
+          segmentId: bySeg("Conteúdo / Vídeos"), projectId: byProject("Série de Vídeos de Processo"),
+          queue: "later", deadline: addDays(14), priority: "normal", estimate: "75 min",
+          tags: "vídeo, conteúdo", futureEconomy: 2
+        }),
+        demoTask("Rascunhar aula 1 do curso", {
+          segmentId: bySeg("Ensino / Cursos"), projectId: byProject("Curso de Impressão 3D"),
+          queue: "future", deadline: addDays(28), estimate: "60 min", tags: "curso, ensino"
+        }),
+        demoTask("Modelar suporte para peças do tabuleiro", {
+          segmentId: bySeg("Robótica"), projectId: byProject("Robô de Xadrez"),
+          queue: "future", deadline: addDays(60), estimate: "90 min", tags: "robótica, CAD"
+        }),
+        demoTask("Mapear possíveis parceiros da universidade", {
+          segmentId: bySeg("Universidade"), projectId: byProject("Divulgação da Impressão 3D na Universidade"),
+          queue: "later", deadline: addDays(12), estimate: "45 min",
+          tags: "universidade, networking", someoneDepends: 2
+        }),
+        demoTask("Montar esqueleto do gerador de orçamento", {
+          segmentId: bySeg("Impressão 3D"), projectId: byProject("Sistema de Orçamento STL"),
+          queue: "future", deadline: addDays(35), estimate: "120 min", tags: "programação"
+        }),
+        demoTask("Selecionar 3 peças para catálogo", {
+          segmentId: bySeg("Revo · Itens da Loja"), queue: "later", deadline: addDays(20),
+          estimate: "40 min", tags: "produto, loja"
+        }),
+        demoTask("Testar formato curto de vídeo", {
+          segmentId: bySeg("Conteúdo / Vídeos"), projectId: byProject("Série de Vídeos de Processo"),
+          queue: "future", deadline: addDays(30), estimate: "45 min", tags: "vídeo, experimento"
+        })
+      ];
+
+      const blocks = { block1: [], block2: [], block3: [] };
+      const queues = { now: [], next: [], later: [], future: [] };
+      tasks.forEach(t => {
+        if (t.block) blocks[t.block].push(t.id);
+        else queues[t.queue || "later"].push(t.id);
+      });
+
+      return {
+        version: 2,
+        savedAt: new Date().toISOString(),
+        segments,
+        projects,
+        tasks,
+        queues,
+        blocks,
+        completed: []
+      };
+    }
+
+    async function loadData() {
+      const { data: { user }, error: sessionError } = await supabaseClient.auth.getUser();
+      if (sessionError) throw sessionError;
+      currentUser = user || null;
+
+      if (!currentUser) {
+        throw new Error("AUTH_REQUIRED");
+      }
+
+      const { data: cloudRow, error: cloudError } = await supabaseClient
+        .from("painel_data")
+        .select("data, updated_at")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+      if (cloudError) throw cloudError;
+
+      if (cloudRow?.data && Array.isArray(cloudRow.data.tasks) && Array.isArray(cloudRow.data.projects)) {
+        state.data = cloudRow.data;
+        normalizeData();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+        localStorage.setItem(LOCAL_OWNER_KEY, currentUser.id);
+        cloudReady = true;
+        updateSaveStatus(`Sincronizado · ${formatDateTime(cloudRow.updated_at)}`);
+        return;
+      }
+
+      // Primeiro acesso deste usuário: aproveita o localStorage atual como migração.
+      const localOwner = localStorage.getItem(LOCAL_OWNER_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw && (!localOwner || localOwner === currentUser.id)) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.tasks) && Array.isArray(parsed.projects)) {
+            state.data = parsed;
+            normalizeData();
+            localStorage.setItem(LOCAL_OWNER_KEY, currentUser.id);
+            cloudReady = true;
+            await saveDataToCloud();
+            updateSaveStatus("Dados locais migrados para o Supabase");
+            return;
+          }
+        } catch (error) {
+          console.warn("Falha ao ler dados locais para migração.", error);
+        }
+      }
+
+      state.data = createEmptyData();
+      normalizeData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+      localStorage.setItem(LOCAL_OWNER_KEY, currentUser.id);
+      cloudReady = true;
+      await saveDataToCloud();
+      updateSaveStatus("Painel criado no Supabase");
+    }
+
+    function updateSaveStatus(text) {
+      const el = $("#saveStatus");
+      if (el) el.textContent = text;
+    }
+
+    async function saveDataToCloud(snapshot = null) {
+      if (!currentUser || !cloudReady) return;
+      const data = snapshot || JSON.parse(JSON.stringify(state.data));
+      const updatedAt = new Date().toISOString();
+
+      const { error } = await supabaseClient
+        .from("painel_data")
+        .upsert({
+          user_id: currentUser.id,
+          data,
+          updated_at: updatedAt
+        }, { onConflict: "user_id" });
+
+      if (error) throw error;
+      updateSaveStatus(`Sincronizado · ${formatDateTime(updatedAt)}`);
+    }
+
+    function migrateLegacyData(legacy) {
+      const data = createEmptyData();
+      const segmentMap = new Map();
+
+      const segmentForName = name => {
+        const normalized = String(name || "").toLowerCase();
+        let segmentName = "Importados";
+        if (normalized.includes("freela")) segmentName = "Freela de Design 3D";
+        else if (normalized.includes("loja") || normalized.includes("produto")) segmentName = "Revo · Itens da Loja";
+        else if (normalized.includes("impress")) segmentName = "Impressão 3D";
+        else if (normalized.includes("vídeo") || normalized.includes("conteúdo")) segmentName = "Conteúdo / Vídeos";
+        else if (normalized.includes("univers")) segmentName = "Universidade";
+        else if (normalized.includes("robô")) segmentName = "Robótica";
+        else if (normalized.includes("curso")) segmentName = "Ensino / Cursos";
+        if (!segmentMap.has(segmentName)) {
+          const seg = demoSegment(segmentName);
+          data.segments.push(seg);
+          segmentMap.set(segmentName, seg.id);
+        }
+        return segmentMap.get(segmentName);
+      };
+
+      const projectLookup = new Map();
+
+      legacy.projects.forEach(oldProject => {
+        const segId = segmentForName(oldProject.name);
+        const normalized = String(oldProject.name || "").toLowerCase();
+        const recurring = ["freela", "loja", "impressão", "conteúdo", "vídeo", "universidade"].some(word => normalized.includes(word));
+        if (!recurring || normalized.includes("divulgação")) {
+          const project = {
+            id: oldProject.id || uid("p"),
+            name: oldProject.name,
+            segmentId: segId,
+            description: oldProject.description || "",
+            horizon: oldProject.horizon || "medium",
+            deadline: oldProject.deadline || "",
+            status: oldProject.status || "active",
+            revenuePotential: Number(oldProject.revenuePotential || oldProject.revenueNow || 0),
+            roi: Number(oldProject.roi || 0),
+            thirdParty: Number(oldProject.thirdParty || 0),
+            leverage: Number(oldProject.leverage || 0)
+          };
+          data.projects.push(project);
+          projectLookup.set(oldProject.id, project.id);
+        }
+      });
+
+      legacy.tasks.forEach(oldTask => {
+        const oldProject = legacy.projects.find(p => p.id === oldTask.projectId);
+        const segId = oldProject ? segmentForName(oldProject.name) : "";
+        const newProjectId = projectLookup.get(oldTask.projectId) || "";
+        const task = {
+          id: oldTask.id || uid("t"),
+          title: oldTask.title || "Tarefa importada",
+          segmentId: newProjectId ? (getProjectFromData(data, newProjectId)?.segmentId || segId) : segId,
+          projectId: newProjectId,
+          status: oldTask.status || "active",
+          priority: oldTask.priority || "normal",
+          deadline: oldTask.deadline || "",
+          estimate: oldTask.estimate || "",
+          receivable: Number(oldTask.receivable || 0),
+          note: oldTask.note || "",
+          whyNote: oldTask.whyNote || "",
+          tags: oldTask.tags || "",
+          futureEconomy: Number(oldTask.futureEconomy || 0),
+          someoneDepends: Number(oldTask.someoneDepends || 0),
+          queue: oldTask.queue || "later",
+          block: oldTask.block || null,
+          completedAt: oldTask.completedAt || null
+        };
+        data.tasks.push(task);
+      });
+
+      const taskIds = new Set(data.tasks.map(t => t.id));
+      data.queues = {
+        now: (legacy.queues?.now || []).filter(id => taskIds.has(id)),
+        next: (legacy.queues?.next || []).filter(id => taskIds.has(id)),
+        later: (legacy.queues?.later || []).filter(id => taskIds.has(id)),
+        future: (legacy.queues?.future || []).filter(id => taskIds.has(id))
+      };
+      data.blocks = {
+        block1: (legacy.blocks?.block1 || []).filter(id => taskIds.has(id)),
+        block2: (legacy.blocks?.block2 || []).filter(id => taskIds.has(id)),
+        block3: (legacy.blocks?.block3 || []).filter(id => taskIds.has(id))
+      };
+      data.tasks.forEach(t => {
+        if (t.status === "done") {
+          t.queue = null;
+          t.block = null;
+          data.completed.push(t.id);
+        }
+      });
+
+      return data;
+    }
+
+    function getProjectFromData(data, id) {
+      return data.projects.find(p => p.id === id);
+    }
+
+    function normalizeData() {
+      if (!Array.isArray(state.data.segments)) state.data.segments = [];
+      if (!Array.isArray(state.data.projects)) state.data.projects = [];
+      if (!Array.isArray(state.data.tasks)) state.data.tasks = [];
+      if (!state.data.queues) state.data.queues = { now: [], next: [], later: [], future: [] };
+      if (!state.data.blocks) state.data.blocks = { block1: [], block2: [], block3: [] };
+      if (!Array.isArray(state.data.completed)) state.data.completed = [];
+
+      ["now","next","later","future"].forEach(k => {
+        if (!Array.isArray(state.data.queues[k])) state.data.queues[k] = [];
+      });
+      ["block1","block2","block3"].forEach(k => {
+        if (!Array.isArray(state.data.blocks[k])) state.data.blocks[k] = [];
+      });
+
+      state.data.projects.forEach(project => {
+        project.segmentId = project.segmentId || "";
+        project.revenuePotential = Number(project.revenuePotential || 0);
+        project.roi = Number(project.roi || 0);
+        project.thirdParty = Number(project.thirdParty || 0);
+        project.leverage = Number(project.leverage || 0);
+      });
+
+      state.data.tasks.forEach(task => {
+        task.segmentId = task.segmentId || "";
+        task.projectId = task.projectId || "";
+        task.receivable = Number(task.receivable || 0);
+        task.whyNote = task.whyNote || "";
+        task.futureEconomy = Number(task.futureEconomy || 0);
+        task.someoneDepends = Number(task.someoneDepends || 0);
+
+        const project = getProject(task.projectId);
+        if (project?.segmentId) task.segmentId = project.segmentId;
+      });
+
+      const validTaskIds = new Set(state.data.tasks.map(t => t.id));
+      Object.keys(state.data.queues).forEach(k => state.data.queues[k] = state.data.queues[k].filter(id => validTaskIds.has(id)));
+      Object.keys(state.data.blocks).forEach(k => state.data.blocks[k] = state.data.blocks[k].filter(id => validTaskIds.has(id)));
+      state.data.completed = state.data.completed.filter(id => validTaskIds.has(id));
+
+      const seen = new Set();
+      state.data.queues = Object.fromEntries(Object.entries(state.data.queues).map(([k, ids]) => [k, ids.filter(id => !seen.has(id) && seen.add(id))]));
+      state.data.blocks = Object.fromEntries(Object.entries(state.data.blocks).map(([k, ids]) => [k, ids.filter(id => !seen.has(id) && seen.add(id))]));
+      state.data.completed = state.data.completed.filter(id => !seen.has(id) && seen.add(id));
+
+      state.data.tasks.forEach(task => {
+        if (state.data.completed.includes(task.id) || task.status === "done") {
+          task.status = "done";
+          task.queue = null;
+          task.block = null;
+          if (!task.completedAt) task.completedAt = new Date().toISOString();
+          if (!state.data.completed.includes(task.id)) state.data.completed.push(task.id);
+          return;
+        }
+
+        const q = queueDefinitions.find(x => state.data.queues[x.id].includes(task.id));
+        const b = blockDefinitions.find(x => state.data.blocks[x.id].includes(task.id));
+        if (q) {
+          task.queue = q.id;
+          task.block = null;
+        } else if (b) {
+          task.block = b.id;
+          task.queue = null;
+        } else {
+          task.queue = task.queue && state.data.queues[task.queue] ? task.queue : "later";
+          task.block = null;
+          state.data.queues[task.queue].push(task.id);
+        }
+      });
+
+      state.data.version = 2;
+    }
+
+    function saveData(showToast = false) {
+      state.data.savedAt = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+      if (currentUser) localStorage.setItem(LOCAL_OWNER_KEY, currentUser.id);
+
+      if (cloudReady && currentUser) {
+        const snapshot = JSON.parse(JSON.stringify(state.data));
+        updateSaveStatus("Sincronizando...");
+        cloudSaveQueue = cloudSaveQueue
+          .then(() => saveDataToCloud(snapshot))
+          .catch(error => {
+            console.error("Falha ao sincronizar com Supabase.", error);
+            updateSaveStatus("Erro de sincronização · salvo localmente");
+            showToastMessage("Alteração salva localmente, mas não foi sincronizada.");
+          });
+      } else {
+        updateSaveStatus("Salvo localmente");
+      }
+
+      if (showToast) showToastMessage(currentUser ? "Alterações salvas." : "Alterações salvas localmente.");
+    }
+
+    function renderAll() {
+      renderTop();
+      renderBlocks();
+      renderQueues();
+      renderWhyPanel();
+      renderSegments();
+      renderProjects();
+      renderLongTerm();
+      renderCompleted();
+      populateSegmentSelects();
+      populateTaskProjectSelect();
+      selectStateIfNeeded();
+    }
+
+    function renderTop() {
+      const now = new Date();
+      $("#todayDate").textContent = now.toLocaleDateString("pt-BR", {
+        weekday: "long", day: "2-digit", month: "long", year: "numeric"
+      });
+
+      const totalCapacity = blockDefinitions.reduce((sum, b) => sum + b.capacity, 0);
+      const planned = totalPlannedMinutes();
+
+      const blocksWithTasks = blockDefinitions.filter(b => (state.data.blocks[b.id] || []).length > 0).length;
+      const blockTaskCount = blockDefinitions.reduce((sum, b) => sum + (state.data.blocks[b.id] || []).length, 0);
+
+      $("#blocksStat").textContent = `${blocksWithTasks} / 3`;
+      $("#blocksStatSub").textContent = `${blockTaskCount} tarefa(s) · ${formatMinutes(planned)} planejados.`;
+
+      const dayFill = $("#dayLoadFill");
+      const dayRatio = totalCapacity ? planned / totalCapacity : 0;
+      const dayPct = Math.min(100, Math.round(dayRatio * 100));
+      dayFill.style.width = `${dayPct}%`;
+      dayFill.style.background = loadColorFromRatio(dayRatio);
+
+      $("#dayState").textContent = `${formatMinutes(planned)} / ${formatMinutes(totalCapacity)}`;
+      $("#dayStateSub").textContent =
+        planned === 0 ? "Sem tarefas nos blocos." :
+        planned <= totalCapacity ? `${formatMinutes(totalCapacity - planned)} livres nos blocos.` :
+        `${formatMinutes(planned - totalCapacity)} acima da capacidade.`;
+
+      const selectedTask = getTask(state.selectedTaskId);
+      const selectedProject = getProject(state.selectedProjectId);
+      const selectedSegment = getSegment(state.selectedSegmentId);
+
+      if (selectedTask) {
+        const p = getProject(selectedTask.projectId);
+        const s = getSegment(resolvedSegmentId(selectedTask));
+        $("#selectedProjectValue").textContent = selectedTask.title;
+        $("#selectedProjectSub").textContent = `${p?.name || "Sem projeto"} · ${s?.name || "Sem segmento"}`;
+      } else if (selectedProject) {
+        $("#selectedProjectValue").textContent = selectedProject.name;
+        $("#selectedProjectSub").textContent = `${horizonLabel(selectedProject.horizon)} · ${statusLabel(selectedProject.status)}`;
+      } else if (selectedSegment) {
+        $("#selectedProjectValue").textContent = selectedSegment.name;
+        $("#selectedProjectSub").textContent = `Segmento · ${segmentTaskStats(selectedSegment.id).total} tarefa(s)`;
+      } else {
+        $("#selectedProjectValue").textContent = "Nenhum";
+        $("#selectedProjectSub").textContent = "Clique em uma tarefa, segmento ou projeto.";
+      }
+
+      const day100 = addDaysFromDate(startOfDay(new Date()), 99);
+      $("#todayMeta").textContent = `100 dias → ${formatDate(day100)}`;
+    }
+
+    function startOfDay(date) {
+      const d = new Date(date);
+      d.setHours(0,0,0,0);
+      return d;
+    }
+
+    function totalPlannedMinutes() {
+      return blockDefinitions.reduce((sum, block) => {
+        return sum + (state.data.blocks[block.id] || []).reduce((acc, taskId) => {
+          return acc + parseDurationMinutes(getTask(taskId)?.estimate);
+        }, 0);
+      }, 0);
+    }
+
+    function blockLoad(blockId) {
+      const block = blockDefinitions.find(b => b.id === blockId);
+      const ids = state.data.blocks[blockId] || [];
+      const minutes = ids.reduce((sum, id) => sum + parseDurationMinutes(getTask(id)?.estimate), 0);
+      return {
+        minutes,
+        capacity: block?.capacity || 0,
+        ratio: block?.capacity ? minutes / block.capacity : 0
+      };
+    }
+
+    function renderBlocks() {
+      const container = $("#blocksGrid");
+      container.innerHTML = blockDefinitions.map(block => {
+        const ids = state.data.blocks[block.id] || [];
+        const load = blockLoad(block.id);
+        const pct = Math.min(100, Math.round(load.ratio * 100));
+        const over = load.minutes > block.capacity;
+        const label = `${block.start} - ${block.end}`;
+        return `
+          <div class="work-block" data-drop-type="block" data-target-id="${block.id}">
+            <div class="block-header">
+              <div class="block-name">${block.label} <span style="color:var(--muted)">- (${label})</span></div>
+              <div class="block-count">${ids.length} tarefa(s)</div>
+            </div>
+            <div class="block-body" data-drop-type="block" data-target-id="${block.id}">
+              ${ids.length ? `<div class="card-list">${ids.map(taskId => renderTaskCard(taskId, { showRemoveFromBlock: true })).join("")}</div>` :
+                `<div class="block-empty">Arraste uma tarefa para este bloco.</div>`}
+              <div class="time-load">
+                <div class="time-load-top">
+                  <span>Carga do bloco</span>
+                  <strong class="${over ? "metric-red" : ""}">${formatMinutes(load.minutes)} / ${formatMinutes(block.capacity)}</strong>
+                </div>
+                <div class="load-track">
+                  <div class="load-fill" style="width:${pct}%;background:${loadColorFromRatio(load.ratio)}"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+      bindDragAndCardEvents(container);
+    }
+
+    function taskIsVisible(taskId) {
+      const task = getTask(taskId);
+      if (!task) return false;
+      const project = getProject(task.projectId);
+      const segment = getSegment(resolvedSegmentId(task));
+
+      if (state.search.trim()) {
+        const q = state.search.trim().toLowerCase();
+        const haystack = [
+          task.title, task.note, task.whyNote, task.tags,
+          project?.name || "", project?.description || "",
+          segment?.name || "", segment?.description || ""
+        ].join(" ").toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+
+      if (state.filter === "all") return true;
+      if (state.filter === "active") return task.status === "active";
+      if (state.filter === "waiting") return task.status === "waiting";
+      if (["short","medium","long"].includes(state.filter)) return project?.horizon === state.filter;
+      return true;
+    }
+
+    function renderQueues() {
+      const container = $("#queues");
+      container.innerHTML = queueDefinitions.map(queue => {
+        const ids = state.data.queues[queue.id] || [];
+        const filteredIds = ids.filter(taskIsVisible);
+        return `
+          <div class="queue-column" data-drop-type="queue" data-target-id="${queue.id}">
+            <div class="queue-header">
+              <h3>${queue.label}</h3>
+              <small>${filteredIds.length} · ${queue.hint}</small>
+            </div>
+            <div class="queue-body" data-drop-type="queue" data-target-id="${queue.id}">
+              ${filteredIds.length
+                ? `<div class="card-list">${filteredIds.map(taskId => renderTaskCard(taskId)).join("")}</div>`
+                : `<div class="column-empty">Nenhuma tarefa visível nesta fila.</div>`}
+            </div>
+          </div>
+        `;
+      }).join("");
+      bindDragAndCardEvents(container);
+    }
+
+    function renderTaskCard(taskId, options = {}) {
+      const task = getTask(taskId);
+      if (!task) return "";
+      const project = getProject(task.projectId);
+      const segment = getSegment(resolvedSegmentId(task));
+      const pClass = deadlineClass(task.deadline);
+      const dChipClass = deadlineChipClass(task.deadline);
+      const tagList = String(task.tags || "").split(",").map(s => s.trim()).filter(Boolean);
+
+      return `
+        <article class="task-card ${pClass}"
+                 draggable="true"
+                 data-task-id="${task.id}">
+          <div class="task-topline">
+            <input class="task-check"
+                   type="checkbox"
+                   ${task.status === "done" ? "checked" : ""}
+                   aria-label="Concluir tarefa"
+                   data-task-check="${task.id}" />
+            <div class="task-content" data-select-task="${task.id}">
+              <div class="task-title">${escapeHtml(task.title)}</div>
+              <div class="task-project">
+                ${escapeHtml(project?.name || segment?.name || "Sem projeto/segmento")}
+              </div>
+            </div>
+            <div class="task-actions">
+              ${options.showRemoveFromBlock ? `<button class="icon-btn" type="button" title="Tirar do bloco" data-remove-block="${task.id}">↩</button>` : ""}
+              <button class="icon-btn" type="button" title="Editar" data-edit-task="${task.id}">✎</button>
+              <button class="icon-btn" type="button" title="Excluir" data-delete-task="${task.id}">×</button>
+            </div>
+          </div>
+
+          <div class="task-meta">
+            <span class="chip">${priorityLabel(task.priority)}</span>
+            ${task.receivable > 0 ? `<span class="chip metric-green">a receber ${money(task.receivable)}</span>` : ""}
+            ${task.deadline ? `<span class="chip ${dChipClass}">${formatDate(task.deadline)} · ${deadlineLabel(task.deadline)}</span>` : ""}
+            ${task.estimate ? `<span class="chip">${escapeHtml(task.estimate)}</span>` : ""}
+            ${task.status === "waiting" ? `<span class="chip">Aguardando</span>` : ""}
+          </div>
+
+          ${task.note ? `<div class="task-note">${escapeHtml(task.note)}</div>` : ""}
+          ${tagList.length ? `<div class="tags">${tagList.slice(0, 6).map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+        </article>
+      `;
+    }
+
+    function renderWhyPanel() {
+      const container = $("#whyContent");
+      const task = getTask(state.selectedTaskId);
+
+      if (!task) {
+        container.innerHTML = `<div class="why-empty">Selecione uma tarefa para ver os critérios de decisão.</div>`;
+        return;
+      }
+
+      const project = getProject(task.projectId);
+      const segment = getSegment(resolvedSegmentId(task));
+
+      container.innerHTML = `
+        <div class="why-task-title">${escapeHtml(task.title)}</div>
+        <div class="why-project">${escapeHtml(project?.name || "Sem projeto")} · ${escapeHtml(segment?.name || "Sem segmento")}</div>
+
+        <div class="why-grid">
+          <div class="why-item">
+            <div class="why-label">Existe prazo?</div>
+            <div class="why-value">${task.deadline ? `${formatDate(task.deadline)} · ${deadlineLabel(task.deadline)}` : "Não"}</div>
+          </div>
+          <div class="why-item">
+            <div class="why-label">Gera receita agora?</div>
+            <div class="why-value">${task.receivable > 0 ? money(task.receivable) : "Não definido"}</div>
+          </div>
+          <div class="why-item">
+            <div class="why-label">Pode gerar receita futuramente?</div>
+            <div class="why-value">${project ? money(project.revenuePotential) : "—"}</div>
+          </div>
+          <div class="why-item">
+            <div class="why-label">Retorno / investimento</div>
+            <div class="why-value">${project ? `${project.roi}/10` : (segment ? `${segment.roi}/10` : "—")}</div>
+          </div>
+          <div class="why-item">
+            <div class="why-label">Dependência de terceiros</div>
+            <div class="why-value">${project ? thirdPartyLabel(project.thirdParty) : (segment ? thirdPartyLabel(segment.thirdParty) : "—")}</div>
+          </div>
+          <div class="why-item">
+            <div class="why-label">Economiza trabalho futuro?</div>
+            <div class="why-value">${economyLabel(task.futureEconomy)}</div>
+          </div>
+          <div class="why-item">
+            <div class="why-label">Alguém depende disso?</div>
+            <div class="why-value">${dependsLabel(task.someoneDepends)}</div>
+          </div>
+          <div class="why-item">
+            <div class="why-label">Alavancagem</div>
+            <div class="why-value">${project ? `${project.leverage}/10` : (segment ? `${segment.leverage}/10` : "—")}</div>
+          </div>
+          <div class="why-item">
+            <div class="why-label">Pode esperar?</div>
+            <div class="why-value">${task.deadline && daysUntil(task.deadline) < 3 ? "Pouco provável" : "Você decide"}</div>
+          </div>
+        </div>
+
+        <div class="project-badges">
+          ${project ? `<span class="project-badge">Projeto: ${escapeHtml(project.name)}</span>` : ""}
+          ${segment ? `<span class="project-badge">Segmento: ${escapeHtml(segment.name)}</span>` : ""}
+          <span class="project-badge">prioridade: ${priorityLabel(task.priority)}</span>
+          ${task.receivable > 0 ? `<span class="project-badge metric-green">${money(task.receivable)} a receber</span>` : ""}
+        </div>
+
+        <label for="whyNoteEditor" style="display:block;margin-top:12px;color:#a8b2bc;font-size:10px;text-transform:uppercase;letter-spacing:.08em">
+          Observação de decisão
+        </label>
+        <textarea id="whyNoteEditor" class="why-note" maxlength="800"
+          placeholder="Escreva aqui o motivo, contexto ou lembrete que ajuda a decidir sobre esta tarefa...">${escapeHtml(task.whyNote || "")}</textarea>
+        <div class="field-note" style="margin-top:4px">Salvo automaticamente enquanto você escreve.</div>
+      `;
+
+      const noteEditor = $("#whyNoteEditor");
+      let saveTimer;
+      noteEditor.addEventListener("input", () => {
+        task.whyNote = noteEditor.value;
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => saveData(false), 250);
+      });
+    }
+
+    function renderSegments() {
+      const list = $("#segmentMiniList");
+      $("#segmentCountLabel").textContent = state.data.segments.length;
+
+      list.innerHTML = state.data.segments.map(segment => {
+        const stats = segmentTaskStats(segment.id);
+        return `
+          <div class="segment-mini ${segment.id === state.selectedSegmentId ? "selected" : ""}" data-select-segment="${segment.id}">
+            <div class="task-topline">
+              <div class="segment-name" style="flex:1;min-width:0">${escapeHtml(segment.name)}</div>
+              <div class="task-actions">
+                <button class="icon-btn" type="button" title="Editar segmento" data-edit-segment="${segment.id}">✎</button>
+                <button class="icon-btn" type="button" title="Excluir segmento" data-delete-segment="${segment.id}">×</button>
+              </div>
+            </div>
+            <div class="project-mini-row">
+              <span>${stats.total} tarefa(s) · ${stats.projects} projeto(s)</span>
+              <span class="segment-amount">${money(stats.receivable)} a receber</span>
+            </div>
+            <div class="segment-secondary">${statusLabel(segment.status)} · alavancagem ${segment.leverage}/10</div>
+          </div>
+        `;
+      }).join("") || `<div class="why-empty">Nenhum segmento cadastrado.</div>`;
+
+      $$("[data-edit-segment]", list).forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.stopPropagation();
+          openSegmentModal(btn.dataset.editSegment);
+        });
+      });
+
+      $$("[data-delete-segment]", list).forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.stopPropagation();
+          confirmDeleteSegment(btn.dataset.deleteSegment);
+        });
+      });
+
+      $$("[data-select-segment]", list).forEach(el => {
+        el.addEventListener("click", e => {
+          if (e.target.closest("[data-edit-segment],[data-delete-segment]")) return;
+          state.selectedSegmentId = el.dataset.selectSegment;
+          state.selectedProjectId = null;
+          state.selectedTaskId = null;
+          renderAll();
+        });
+      });
+    }
+
+    function renderProjects() {
+      const list = $("#projectMiniList");
+      const projects = state.data.projects.filter(p => p.status !== "done");
+      $("#projectCountLabel").textContent = projects.length;
+
+      list.innerHTML = projects.map(project => {
+        const stats = projectTaskStats(project.id);
+        const progress = stats.total ? Math.round(stats.done / stats.total * 100) : 0;
+        const segment = getSegment(project.segmentId);
+        return `
+          <div class="project-mini ${project.id === state.selectedProjectId ? "selected" : ""}" data-select-project="${project.id}">
+            <div class="task-topline">
+              <div class="project-mini-name" style="flex:1;min-width:0">${escapeHtml(project.name)}</div>
+              <div class="task-actions">
+                <button class="icon-btn" type="button" title="Editar projeto" data-edit-project="${project.id}">✎</button>
+                <button class="icon-btn" type="button" title="Excluir projeto" data-delete-project="${project.id}">×</button>
+              </div>
+            </div>
+            <div class="project-mini-row">
+              <span>${stats.done}/${stats.total} tarefas</span>
+              <span>${progress}%</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width:${progress}%"></div></div>
+            <div class="project-mini-row">
+              <span>${horizonLabel(project.horizon)} · ${escapeHtml(segment?.name || "sem segmento")}</span>
+              <span>${project.deadline ? deadlineLabel(project.deadline) : "sem prazo"}</span>
+            </div>
+          </div>
+        `;
+      }).join("") || `<div class="why-empty">Nenhum projeto ativo.</div>`;
+
+      $$("[data-edit-project]", list).forEach(btn => {
+        btn.addEventListener("click", e => { e.stopPropagation(); openProjectModal(btn.dataset.editProject); });
+      });
+      $$("[data-delete-project]", list).forEach(btn => {
+        btn.addEventListener("click", e => { e.stopPropagation(); confirmDeleteProject(btn.dataset.deleteProject); });
+      });
+      $$("[data-select-project]", list).forEach(el => {
+        el.addEventListener("click", e => {
+          if (e.target.closest("[data-edit-project],[data-delete-project]")) return;
+          state.selectedProjectId = el.dataset.selectProject;
+          const p = getProject(state.selectedProjectId);
+          state.selectedSegmentId = p?.segmentId || null;
+          state.selectedTaskId = null;
+          renderAll();
+        });
+      });
+    }
+
+    function renderLongTerm() {
+      const grid = $("#longTermGrid");
+      const projects = state.data.projects.filter(p => p.horizon === "long" && p.status !== "done");
+      grid.innerHTML = projects.map(project => {
+        const stats = projectTaskStats(project.id);
+        const progress = stats.total ? Math.round(stats.done / stats.total * 100) : 0;
+        const segment = getSegment(project.segmentId);
+        return `
+          <div class="long-card" data-select-project="${project.id}">
+            <div class="long-card-title">${escapeHtml(project.name)}</div>
+            <div class="long-card-meta">${escapeHtml(segment?.name || "sem segmento")} · ${stats.done}/${stats.total} tarefas · ${progress}%</div>
+            <div class="progress"><div class="progress-bar" style="width:${progress}%"></div></div>
+            <div class="long-card-meta">${project.deadline ? `${formatDate(project.deadline)} · ${deadlineLabel(project.deadline)}` : "Sem prazo definido"}</div>
+          </div>
+        `;
+      }).join("") || `<div class="why-empty">Nenhum objetivo de longo prazo cadastrado.</div>`;
+
+      $$("[data-select-project]", grid).forEach(el => {
+        el.addEventListener("click", () => {
+          state.selectedProjectId = el.dataset.selectProject;
+          state.selectedTaskId = null;
+          const p = getProject(state.selectedProjectId);
+          state.selectedSegmentId = p?.segmentId || null;
+          renderAll();
+        });
+      });
+    }
+
+    function renderCompleted() {
+      const grid = $("#completedGrid");
+      const ids = [...state.data.completed]
+        .filter(id => getTask(id))
+        .sort((a,b) => new Date(getTask(b).completedAt || 0) - new Date(getTask(a).completedAt || 0));
+
+      $("#completedCountLabel").textContent = `${ids.length} tarefa(s)`;
+
+      grid.innerHTML = ids.map(id => {
+        const task = getTask(id);
+        const project = getProject(task.projectId);
+        const segment = getSegment(resolvedSegmentId(task));
+        return `
+          <article class="completed-card">
+            <div class="task-topline">
+              <input class="task-check" type="checkbox" checked data-task-check="${task.id}" aria-label="Reabrir tarefa" />
+              <div class="task-content" data-select-task="${task.id}">
+                <div class="task-title">${escapeHtml(task.title)}</div>
+                <div class="task-project">${escapeHtml(project?.name || segment?.name || "Sem projeto/segmento")}</div>
+              </div>
+              <div class="task-actions">
+                <button class="icon-btn" type="button" title="Editar" data-edit-task="${task.id}">✎</button>
+                <button class="icon-btn" type="button" title="Excluir" data-delete-task="${task.id}">×</button>
+              </div>
+            </div>
+            <div class="completed-date">Concluída em ${formatDateTime(task.completedAt)}</div>
+            ${task.receivable > 0 ? `<div class="completed-date metric-green">${money(task.receivable)} vinculados</div>` : ""}
+          </article>
+        `;
+      }).join("") || `<div class="why-empty">Nenhuma tarefa concluída ainda.</div>`;
+
+      bindCompletedEvents(grid);
+    }
+
+    function bindCompletedEvents(root) {
+      $$("[data-task-check]", root).forEach(check => {
+        check.addEventListener("click", e => e.stopPropagation());
+        check.addEventListener("change", () => toggleTaskCompletion(check.dataset.taskCheck, !check.checked));
+      });
+      $$("[data-select-task]", root).forEach(el => {
+        el.addEventListener("click", () => {
+          state.selectedTaskId = el.dataset.selectTask;
+          const task = getTask(state.selectedTaskId);
+          state.selectedProjectId = task?.projectId || null;
+          state.selectedSegmentId = task ? resolvedSegmentId(task) : null;
+          renderTop();
+          renderWhyPanel();
+        });
+      });
+      $$("[data-edit-task]", root).forEach(btn => {
+        btn.addEventListener("click", e => { e.stopPropagation(); openTaskModal(btn.dataset.editTask); });
+      });
+      $$("[data-delete-task]", root).forEach(btn => {
+        btn.addEventListener("click", e => { e.stopPropagation(); confirmDeleteTask(btn.dataset.deleteTask); });
+      });
+    }
+
+    function bindDragAndCardEvents(root) {
+      $$("[draggable='true']", root).forEach(card => {
+        card.addEventListener("dragstart", e => {
+          state.drag.taskId = card.dataset.taskId;
+          card.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", card.dataset.taskId);
+        });
+
+        card.addEventListener("dragend", () => {
+          card.classList.remove("dragging");
+          state.drag.taskId = null;
+          $$(".drag-over").forEach(el => el.classList.remove("drag-over"));
+          $$(".drop-placeholder").forEach(el => el.remove());
+        });
+
+        card.addEventListener("click", e => {
+          if (e.target.closest(".task-check,.task-actions")) return;
+          state.selectedTaskId = card.dataset.taskId;
+          const task = getTask(state.selectedTaskId);
+          state.selectedProjectId = task?.projectId || null;
+          state.selectedSegmentId = task ? resolvedSegmentId(task) : null;
+          renderTop();
+          renderWhyPanel();
+          renderSegments();
+          renderProjects();
+        });
+      });
+
+      $$("[data-task-check]", root).forEach(check => {
+        check.addEventListener("click", e => e.stopPropagation());
+        check.addEventListener("change", () => toggleTaskCompletion(check.dataset.taskCheck, check.checked));
+      });
+
+      $$("[data-edit-task]", root).forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.stopPropagation();
+          openTaskModal(btn.dataset.editTask);
+        });
+      });
+
+      $$("[data-delete-task]", root).forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.stopPropagation();
+          confirmDeleteTask(btn.dataset.deleteTask);
+        });
+      });
+
+      $$("[data-remove-block]", root).forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.stopPropagation();
+          const task = getTask(btn.dataset.removeBlock);
+          if (!task) return;
+          removeTaskFromAllLocations(task.id);
+          task.queue = "next";
+          state.data.queues.next.push(task.id);
+          state.selectedTaskId = task.id;
+          state.selectedProjectId = task.projectId || null;
+          state.selectedSegmentId = resolvedSegmentId(task) || null;
+          saveData(false);
+          renderAll();
+          showToastMessage("Tarefa removida do bloco e enviada para PRÓXIMO.");
+        });
+      });
+
+      $$("[data-drop-type]", root).forEach(target => {
+        target.addEventListener("dragover", e => {
+          if (!state.drag.taskId) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          target.classList.add("drag-over");
+        });
+
+        target.addEventListener("dragleave", e => {
+          if (!target.contains(e.relatedTarget)) target.classList.remove("drag-over");
+        });
+
+        target.addEventListener("drop", e => {
+          e.preventDefault();
+          target.classList.remove("drag-over");
+          const taskId = state.drag.taskId || e.dataTransfer.getData("text/plain");
+          if (!taskId) return;
+          const type = target.dataset.dropType;
+          const targetId = target.dataset.targetId;
+          const placeholder = target.querySelector(".drop-placeholder");
+          const beforeTaskId = placeholder?.nextElementSibling?.dataset?.taskId || null;
+          placeholder?.remove();
+          moveTaskTo(taskId, type, targetId, beforeTaskId);
+        });
+      });
+
+      root.addEventListener("dragover", e => {
+        const card = e.target.closest(".task-card");
+        if (!card || !state.drag.taskId || card.dataset.taskId === state.drag.taskId) return;
+        e.preventDefault();
+        const list = card.parentElement;
+        if (!list?.classList.contains("card-list")) return;
+
+        const after = e.clientY > card.getBoundingClientRect().top + card.getBoundingClientRect().height / 2;
+        $(".drop-placeholder", list)?.remove();
+
+        const ph = document.createElement("div");
+        ph.className = "drop-placeholder";
+        if (after) list.insertBefore(ph, card.nextSibling);
+        else list.insertBefore(ph, card);
+      });
+
+      root.addEventListener("drop", e => {
+        const placeholder = e.target.closest(".drop-placeholder");
+        if (!placeholder || !state.drag.taskId) return;
+        e.preventDefault();
+        const list = placeholder.parentElement;
+        const sibling = placeholder.nextElementSibling;
+        const beforeId = sibling?.dataset?.taskId || null;
+        placeholder.remove();
+        reorderTaskInCurrentContainer(state.drag.taskId, list, beforeId);
+      });
+    }
+
+    function moveTaskTo(taskId, type, targetId, beforeTaskId = null) {
+      const task = getTask(taskId);
+      if (!task || task.status === "done") return;
+      removeTaskFromAllLocations(taskId);
+
+      const list = type === "queue" ? state.data.queues[targetId] : state.data.blocks[targetId];
+      if (!list) return;
+
+      if (type === "queue") {
+        task.queue = targetId;
+        task.block = null;
+      } else {
+        task.block = targetId;
+        task.queue = null;
+      }
+
+      const index = beforeTaskId ? list.indexOf(beforeTaskId) : -1;
+      if (index >= 0) list.splice(index, 0, taskId);
+      else list.push(taskId);
+
+      state.selectedTaskId = taskId;
+      state.selectedProjectId = task.projectId || null;
+      state.selectedSegmentId = resolvedSegmentId(task) || null;
+      saveData(false);
+      renderAll();
+    }
+
+    function reorderTaskInCurrentContainer(taskId, listElement, beforeTaskId) {
+      const location = findTaskLocation(taskId);
+      if (!location) return;
+      const orderedIds = Array.from(listElement.querySelectorAll(".task-card")).map(el => el.dataset.taskId).filter(Boolean);
+      const filtered = orderedIds.filter(id => id !== taskId);
+      if (beforeTaskId && filtered.includes(beforeTaskId)) filtered.splice(filtered.indexOf(beforeTaskId), 0, taskId);
+      else filtered.push(taskId);
+
+      if (location.type === "queue") state.data.queues[location.id] = filtered;
+      else state.data.blocks[location.id] = filtered;
+
+      saveData(false);
+      renderAll();
+    }
+
+    function findTaskLocation(taskId) {
+      for (const q of queueDefinitions) if (state.data.queues[q.id].includes(taskId)) return { type:"queue", id:q.id };
+      for (const b of blockDefinitions) if (state.data.blocks[b.id].includes(taskId)) return { type:"block", id:b.id };
+      return null;
+    }
+
+    function removeTaskFromAllLocations(taskId) {
+      Object.keys(state.data.queues).forEach(k => {
+        state.data.queues[k] = state.data.queues[k].filter(id => id !== taskId);
+      });
+      Object.keys(state.data.blocks).forEach(k => {
+        state.data.blocks[k] = state.data.blocks[k].filter(id => id !== taskId);
+      });
+      state.data.completed = state.data.completed.filter(id => id !== taskId);
+      const task = getTask(taskId);
+      if (task) {
+        task.queue = null;
+        task.block = null;
+      }
+    }
+
+    function toggleTaskCompletion(taskId, checked) {
+      const task = getTask(taskId);
+      if (!task) return;
+
+      removeTaskFromAllLocations(taskId);
+
+      if (checked) {
+        task.status = "done";
+        task.completedAt = new Date().toISOString();
+        state.data.completed.unshift(task.id);
+        state.selectedTaskId = task.id;
+        state.selectedProjectId = task.projectId || null;
+        state.selectedSegmentId = resolvedSegmentId(task) || null;
+        showToastMessage("Tarefa concluída e registrada.");
+      } else {
+        task.status = "active";
+        task.completedAt = null;
+        task.queue = "next";
+        state.data.queues.next.unshift(task.id);
+        showToastMessage("Tarefa reaberta e enviada para PRÓXIMO.");
+      }
+
+      saveData(false);
+      renderAll();
+    }
+
+    function openSegmentModal(segmentId = null) {
+      state.editingSegmentId = segmentId;
+      $("#segmentForm").reset();
+      syncSegmentRangeOutputs();
+
+      if (segmentId) {
+        const s = getSegment(segmentId);
+        if (!s) return;
+        $("#segmentModalTitle").textContent = "Editar segmento";
+        $("#segmentName").value = s.name || "";
+        $("#segmentDescription").value = s.description || "";
+        $("#segmentStatus").value = s.status || "active";
+        $("#segmentROI").value = s.roi ?? 5;
+        $("#segmentThirdParty").value = s.thirdParty ?? 0;
+        $("#segmentLeverage").value = s.leverage ?? 5;
+        syncSegmentRangeOutputs();
+      } else {
+        $("#segmentModalTitle").textContent = "Novo segmento";
+      }
+
+      openModal("segmentModal");
+      setTimeout(() => $("#segmentName").focus(), 0);
+    }
+
+    function openProjectModal(projectId = null) {
+      state.editingProjectId = projectId;
+      $("#projectForm").reset();
+      populateSegmentSelects();
+
+      if (projectId) {
+        const p = getProject(projectId);
+        if (!p) return;
+        $("#projectModalTitle").textContent = "Editar projeto";
+        $("#projectName").value = p.name || "";
+        $("#projectDescription").value = p.description || "";
+        $("#projectSegment").value = p.segmentId || "";
+        $("#projectHorizon").value = p.horizon || "medium";
+        $("#projectStatus").value = p.status || "active";
+        $("#projectDeadline").value = p.deadline || "";
+        $("#projectROI").value = p.roi ?? 5;
+        $("#projectRevenuePotential").value = p.revenuePotential ?? 0;
+        $("#projectThirdParty").value = p.thirdParty ?? 0;
+        $("#projectLeverage").value = p.leverage ?? 5;
+        syncProjectRangeOutputs();
+      } else {
+        $("#projectModalTitle").textContent = "Novo projeto";
+        $("#projectSegment").value = state.selectedSegmentId || "";
+        syncProjectRangeOutputs();
+      }
+
+      openModal("projectModal");
+      setTimeout(() => $("#projectName").focus(), 0);
+    }
+
+    function populateSegmentSelects() {
+      const projectValue = $("#projectSegment")?.value;
+      if ($("#projectSegment")) {
+        $("#projectSegment").innerHTML = `
+          <option value="">Sem segmento</option>
+          ${state.data.segments.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("")}
+        `;
+        if (projectValue && getSegment(projectValue)) $("#projectSegment").value = projectValue;
+        else if (state.selectedSegmentId && getSegment(state.selectedSegmentId)) $("#projectSegment").value = state.selectedSegmentId;
+      }
+
+      const taskSegmentValue = $("#taskSegment")?.value;
+      if ($("#taskSegment")) {
+        $("#taskSegment").innerHTML = `
+          <option value="">Sem segmento</option>
+          ${state.data.segments.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("")}
+        `;
+        if (taskSegmentValue && getSegment(taskSegmentValue)) $("#taskSegment").value = taskSegmentValue;
+        else if (state.selectedSegmentId && getSegment(state.selectedSegmentId)) $("#taskSegment").value = state.selectedSegmentId;
+      }
+    }
+
+    function populateTaskProjectSelect() {
+      const select = $("#taskProject");
+      const current = select.value;
+      const segmentId = $("#taskSegment")?.value || state.selectedSegmentId || "";
+      select.innerHTML = `
+        <option value="">Sem projeto — direto no segmento</option>
+        ${state.data.projects.map(p => `<option value="${p.id}">${escapeHtml(p.name)}${p.segmentId ? ` · ${escapeHtml(getSegment(p.segmentId)?.name || "")}` : ""}</option>`).join("")}
+      `;
+      if (current && getProject(current)) select.value = current;
+      else {
+        const task = getTask(state.editingTaskId);
+        if (task?.projectId) select.value = task.projectId;
+      }
+      const selectedProject = getProject(select.value);
+      if (selectedProject?.segmentId && $("#taskSegment")) $("#taskSegment").value = selectedProject.segmentId;
+      else if (!selectedProject && segmentId && $("#taskSegment")) $("#taskSegment").value = segmentId;
+    }
+
+    function handleSegmentSubmit(e) {
+      e.preventDefault();
+      const form = new FormData(e.currentTarget);
+      const base = {
+        name: String(form.get("name") || "").trim(),
+        description: String(form.get("description") || "").trim(),
+        status: form.get("status"),
+        roi: Number(form.get("roi") || 0),
+        thirdParty: Number(form.get("thirdParty") || 0),
+        leverage: Number(form.get("leverage") || 0)
+      };
+      if (!base.name) return;
+
+      if (state.editingSegmentId) {
+        const s = getSegment(state.editingSegmentId);
+        if (s) Object.assign(s, base);
+        state.selectedSegmentId = state.editingSegmentId;
+        showToastMessage("Segmento atualizado.");
+      } else {
+        const s = { id: uid("s"), ...base };
+        state.data.segments.push(s);
+        state.selectedSegmentId = s.id;
+        showToastMessage("Segmento criado.");
+      }
+
+      saveData(false);
+      closeModal("segmentModal");
+      renderAll();
+    }
+
+    function handleProjectSubmit(e) {
+      e.preventDefault();
+      const form = new FormData(e.currentTarget);
+      const base = {
+        name: String(form.get("name") || "").trim(),
+        description: String(form.get("description") || "").trim(),
+        segmentId: String(form.get("segmentId") || ""),
+        horizon: form.get("horizon"),
+        deadline: form.get("deadline") || "",
+        status: form.get("status"),
+        roi: Number(form.get("roi") || 0),
+        revenuePotential: Number(form.get("revenuePotential") || 0),
+        thirdParty: Number(form.get("thirdParty") || 0),
+        leverage: Number(form.get("leverage") || 0)
+      };
+      if (!base.name) return;
+
+      if (state.editingProjectId) {
+        const p = getProject(state.editingProjectId);
+        if (p) Object.assign(p, base);
+        state.selectedProjectId = state.editingProjectId;
+        state.selectedSegmentId = base.segmentId || null;
+        showToastMessage("Projeto atualizado.");
+      } else {
+        const p = { id: uid("p"), ...base };
+        state.data.projects.push(p);
+        state.selectedProjectId = p.id;
+        state.selectedSegmentId = p.segmentId || null;
+        showToastMessage("Projeto criado.");
+      }
+
+      state.selectedTaskId = null;
+      saveData(false);
+      closeModal("projectModal");
+      renderAll();
+    }
+
+    function handleTaskSubmit(e) {
+      e.preventDefault();
+      const form = new FormData(e.currentTarget);
+      let segmentId = String(form.get("segmentId") || "");
+      const projectId = String(form.get("projectId") || "");
+      const selectedProject = getProject(projectId);
+
+      if (selectedProject?.segmentId) segmentId = selectedProject.segmentId;
+
+      const base = {
+        title: String(form.get("title") || "").trim(),
+        segmentId,
+        projectId,
+        status: form.get("status"),
+        priority: form.get("priority"),
+        deadline: form.get("deadline") || "",
+        estimate: String(form.get("estimate") || "").trim(),
+        receivable: Number(form.get("receivable") || 0),
+        tags: String(form.get("tags") || "").trim(),
+        note: String(form.get("note") || "").trim(),
+        futureEconomy: Number(form.get("futureEconomy") || 0),
+        someoneDepends: Number(form.get("someoneDepends") || 0)
+      };
+      if (!base.title) return;
+
+      if (state.editingTaskId) {
+        const task = getTask(state.editingTaskId);
+        if (!task) return;
+        const wasDone = task.status === "done";
+        Object.assign(task, base);
+        if (base.status === "done") {
+          removeTaskFromAllLocations(task.id);
+          if (!state.data.completed.includes(task.id)) state.data.completed.unshift(task.id);
+          task.completedAt = task.completedAt || new Date().toISOString();
+        } else if (wasDone || state.data.completed.includes(task.id)) {
+          state.data.completed = state.data.completed.filter(id => id !== task.id);
+          task.completedAt = null;
+          task.queue = "next";
+          state.data.queues.next.unshift(task.id);
+        }
+        state.selectedTaskId = task.id;
+        state.selectedProjectId = task.projectId || null;
+        state.selectedSegmentId = resolvedSegmentId(task) || null;
+        showToastMessage("Tarefa atualizada.");
+      } else {
+        const task = {
+          id: uid("t"),
+          ...base,
+          queue: "next",
+          block: null,
+          whyNote: ""
+        };
+        state.data.tasks.push(task);
+        state.data.queues.next.push(task.id);
+        state.selectedTaskId = task.id;
+        state.selectedProjectId = task.projectId || null;
+        state.selectedSegmentId = resolvedSegmentId(task) || null;
+        showToastMessage("Tarefa criada na fila PRÓXIMO.");
+      }
+
+      saveData(false);
+      closeModal("taskModal");
+      renderAll();
+    }
+
+    function openTaskModal(taskId = null) {
+      state.editingTaskId = taskId;
+      $("#taskForm").reset();
+      populateSegmentSelects();
+      populateTaskProjectSelect();
+
+      if (taskId) {
+        const t = getTask(taskId);
+        if (!t) return;
+        $("#taskModalTitle").textContent = "Editar tarefa";
+        $("#taskTitle").value = t.title || "";
+        $("#taskSegment").value = resolvedSegmentId(t) || t.segmentId || "";
+        populateTaskProjectSelect();
+        $("#taskProject").value = t.projectId || "";
+        $("#taskStatus").value = t.status || "active";
+        $("#taskPriority").value = t.priority || "normal";
+        $("#taskDeadline").value = t.deadline || "";
+        $("#taskEstimate").value = t.estimate || "";
+        $("#taskReceivable").value = t.receivable ?? 0;
+        $("#taskTags").value = t.tags || "";
+        $("#taskNote").value = t.note || "";
+        $("#taskEconomy").value = t.futureEconomy ?? 0;
+        $("#taskDependency").value = t.someoneDepends ?? 0;
+      } else {
+        $("#taskModalTitle").textContent = "Nova tarefa";
+        $("#taskStatus").value = "active";
+        $("#taskPriority").value = "normal";
+        if (state.selectedSegmentId) $("#taskSegment").value = state.selectedSegmentId;
+        if (state.selectedProjectId) {
+          const p = getProject(state.selectedProjectId);
+          if (p) {
+            $("#taskSegment").value = p.segmentId || "";
+            populateTaskProjectSelect();
+            $("#taskProject").value = p.id;
+          }
+        }
+      }
+
+      openModal("taskModal");
+      setTimeout(() => $("#taskTitle").focus(), 0);
+    }
+
+    function confirmDeleteTask(taskId) {
+      const task = getTask(taskId);
+      if (!task) return;
+      state.confirmAction = () => {
+        removeTaskFromAllLocations(taskId);
+        state.data.tasks = state.data.tasks.filter(t => t.id !== taskId);
+        if (state.selectedTaskId === taskId) state.selectedTaskId = null;
+        saveData(false);
+        renderAll();
+        showToastMessage("Tarefa excluída.");
+      };
+      $("#confirmTitle").textContent = "Excluir tarefa";
+      $("#confirmText").textContent = `Excluir "${task.title}"? O segmento/projeto relacionado permanece intacto.`;
+      openModal("confirmModal");
+    }
+
+    function confirmDeleteProject(projectId) {
+      const project = getProject(projectId);
+      if (!project) return;
+      const count = state.data.tasks.filter(t => t.projectId === projectId).length;
+      state.confirmAction = () => {
+        const ids = state.data.tasks.filter(t => t.projectId === projectId).map(t => t.id);
+        ids.forEach(removeTaskFromAllLocations);
+        state.data.tasks = state.data.tasks.filter(t => t.projectId !== projectId);
+        state.data.projects = state.data.projects.filter(p => p.id !== projectId);
+        if (state.selectedProjectId === projectId) state.selectedProjectId = null;
+        if (state.selectedTaskId && !getTask(state.selectedTaskId)) state.selectedTaskId = null;
+        saveData(false);
+        renderAll();
+        showToastMessage(`Projeto excluído${count ? ` junto com ${count} tarefa(s)` : ""}.`);
+      };
+      $("#confirmTitle").textContent = "Excluir projeto";
+      $("#confirmText").textContent = `Excluir "${project.name}"${count ? ` e suas ${count} tarefa(s)` : ""}?`;
+      openModal("confirmModal");
+    }
+
+    function confirmDeleteSegment(segmentId) {
+      const segment = getSegment(segmentId);
+      if (!segment) return;
+      const projectIds = state.data.projects.filter(p => p.segmentId === segmentId).map(p => p.id);
+      const taskIds = state.data.tasks.filter(t => resolvedSegmentId(t) === segmentId).map(t => t.id);
+      state.confirmAction = () => {
+        taskIds.forEach(removeTaskFromAllLocations);
+        state.data.tasks = state.data.tasks.filter(t => !taskIds.includes(t.id));
+        state.data.projects = state.data.projects.filter(p => !projectIds.includes(p.id));
+        state.data.segments = state.data.segments.filter(s => s.id !== segmentId);
+        if (state.selectedSegmentId === segmentId) state.selectedSegmentId = null;
+        if (projectIds.includes(state.selectedProjectId)) state.selectedProjectId = null;
+        if (taskIds.includes(state.selectedTaskId)) state.selectedTaskId = null;
+        saveData(false);
+        renderAll();
+        showToastMessage(`Segmento excluído${taskIds.length ? ` com ${taskIds.length} tarefa(s)` : ""}.`);
+      };
+      $("#confirmTitle").textContent = "Excluir segmento";
+      $("#confirmText").textContent = `Excluir "${segment.name}"${projectIds.length || taskIds.length ? ` e os ${projectIds.length} projeto(s) / ${taskIds.length} tarefa(s) vinculados` : ""}?`;
+      openModal("confirmModal");
+    }
+
+    function syncSegmentRangeOutputs() {
+      $("#segmentROIValue").textContent = $("#segmentROI").value;
+      $("#segmentLeverageValue").textContent = $("#segmentLeverage").value;
+    }
+
+    function syncProjectRangeOutputs() {
+      $("#projectROIValue").textContent = $("#projectROI").value;
+      $("#projectLeverageValue").textContent = $("#projectLeverage").value;
+    }
+
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      if (id === "confirmModal") state.confirmAction = null;
+    }
+
+    function showToastMessage(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToastMessage.timeout);
+      showToastMessage.timeout = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function exportData() {
+      const payload = { ...state.data, exportedAt: new Date().toISOString() };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `painel-100-dias-${todayISO()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToastMessage("Dados exportados em JSON.");
+    }
+
+    function importData(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (!parsed || !Array.isArray(parsed.projects) || !Array.isArray(parsed.tasks)) throw new Error("Formato inválido.");
+
+          state.data = {
+            version: 2,
+            savedAt: new Date().toISOString(),
+            segments: parsed.segments || [],
+            projects: parsed.projects || [],
+            tasks: parsed.tasks || [],
+            queues: parsed.queues || { now: [], next: [], later: [], future: [] },
+            blocks: parsed.blocks || { block1: [], block2: [], block3: [] },
+            completed: parsed.completed || []
+          };
+
+          if (!state.data.segments.length) {
+            state.data = migrateLegacyData(parsed);
+          }
+
+          normalizeData();
+          state.selectedTaskId = null;
+          state.selectedProjectId = null;
+          state.selectedSegmentId = null;
+          saveData(false);
+          renderAll();
+          showToastMessage("Dados importados com sucesso.");
+        } catch (error) {
+          console.error(error);
+          showToastMessage("Arquivo JSON inválido ou incompatível.");
+        } finally {
+          $("#importInput").value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetApp() {
+      state.confirmAction = () => {
+        localStorage.removeItem(STORAGE_KEY);
+        state.data = USE_DEMO_DATA ? createInitialData() : createEmptyData();
+        state.selectedTaskId = null;
+        state.selectedProjectId = null;
+        state.selectedSegmentId = null;
+        saveData(false);
+        renderAll();
+        showToastMessage("Painel resetado.");
+      };
+      $("#confirmTitle").textContent = "Resetar painel";
+      $("#confirmText").textContent = "Isso apagará os dados atuais deste navegador e voltará para os dados iniciais.";
+      openModal("confirmModal");
+    }
+
+    function selectStateIfNeeded() {
+      if (state.selectedTaskId && !getTask(state.selectedTaskId)) state.selectedTaskId = null;
+      if (state.selectedProjectId && !getProject(state.selectedProjectId)) state.selectedProjectId = null;
+      if (state.selectedSegmentId && !getSegment(state.selectedSegmentId)) state.selectedSegmentId = null;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    async function init() {
+      bindInterfaceEvents();
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          showAuthGate();
+          return;
+        }
+        currentUser = session.user;
+        await loadData();
+        hideAuthGate();
+        renderAll();
+      } catch (error) {
+        console.error(error);
+        showAuthGate();
+        setAuthMessage(error.message === "AUTH_REQUIRED" ? "Entre para acessar o painel." : "Não foi possível carregar o painel. Verifique a configuração do Supabase.", true);
+      }
+
+      supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (event === "SIGNED_OUT") {
+          currentUser = null;
+          cloudReady = false;
+          showAuthGate();
+          return;
+        }
+        if (event === "SIGNED_IN" && session?.user) {
+          currentUser = session.user;
+          try {
+            await loadData();
+            hideAuthGate();
+            renderAll();
+          } catch (error) {
+            console.error(error);
+            setAuthMessage("Login feito, mas não foi possível carregar os dados.", true);
+          }
+        }
+      });
+    }
+
+    function showAuthGate() {
+      $("#authGate")?.classList.remove("hidden");
+      $("#authEmail")?.focus();
+    }
+
+    function hideAuthGate() {
+      $("#authGate")?.classList.add("hidden");
+      setAuthMessage("");
+    }
+
+    function setAuthMessage(message, error = false) {
+      const el = $("#authMessage");
+      if (!el) return;
+      el.textContent = message;
+      el.classList.toggle("error", error);
+    }
+
+    function bindInterfaceEvents() {
+      $("#authForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        const email = $("#authEmail").value.trim();
+        const password = $("#authPassword").value;
+        setAuthMessage("Entrando...");
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) setAuthMessage(error.message, true);
+      });
+
+      $("#logoutBtn").addEventListener("click", async () => {
+        await supabaseClient.auth.signOut();
+      });
+
+      $("#newTaskBtn").addEventListener("click", () => openTaskModal());
+      $("#newProjectBtn").addEventListener("click", () => openProjectModal());
+      $("#newSegmentBtn").addEventListener("click", () => openSegmentModal());
+      $("#exportBtn").addEventListener("click", exportData);
+      $("#importBtn").addEventListener("click", () => $("#importInput").click());
+      $("#importInput").addEventListener("change", e => importData(e.target.files?.[0]));
+      $("#resetBtn").addEventListener("click", resetApp);
+
+      $("#segmentForm").addEventListener("submit", handleSegmentSubmit);
+      $("#projectForm").addEventListener("submit", handleProjectSubmit);
+      $("#taskForm").addEventListener("submit", handleTaskSubmit);
+
+      ["segmentROI","segmentLeverage","projectROI","projectLeverage"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", () => {
+          syncSegmentRangeOutputs();
+          syncProjectRangeOutputs();
+        });
+      });
+
+      $("#taskSegment").addEventListener("change", () => populateTaskProjectSelect());
+      $("#taskProject").addEventListener("change", () => {
+        const p = getProject($("#taskProject").value);
+        if (p?.segmentId) $("#taskSegment").value = p.segmentId;
+      });
+
+      $("#confirmActionBtn").addEventListener("click", () => {
+        const action = state.confirmAction;
+        closeModal("confirmModal");
+        if (typeof action === "function") action();
+      });
+
+      $$(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          $$(".filter-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          state.filter = btn.dataset.filter;
+          renderQueues();
+        });
+      });
+
+      $("#searchInput").addEventListener("input", e => {
+        state.search = e.target.value;
+        renderQueues();
+      });
+
+      $$('[data-close]').forEach(btn => {
+        btn.addEventListener("click", () => closeModal(btn.dataset.close));
+      });
+
+      $$(".modal-backdrop").forEach(backdrop => {
+        backdrop.addEventListener("mousedown", e => {
+          if (e.target === backdrop) closeModal(backdrop.id);
+        });
+      });
+
+      document.addEventListener("keydown", e => {
+        if (e.key === "Escape") {
+          $$(".modal-backdrop.open").forEach(modal => closeModal(modal.id));
+          return;
+        }
+        const tag = document.activeElement?.tagName;
+        const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(tag) || document.activeElement?.isContentEditable;
+        if (typing) return;
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key.toLowerCase() === "n") openTaskModal();
+        if (e.key.toLowerCase() === "p") openProjectModal();
+        if (e.key.toLowerCase() === "s") openSegmentModal();
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
